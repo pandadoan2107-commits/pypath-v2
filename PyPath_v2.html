@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PyPath v2 — Học Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080b14;--card:#0f1424;--card2:#161c30;--border:rgba(255,255,255,0.07);
+  --purple:#7c3aed;--violet:#a78bfa;--pink:#f472b6;--orange:#fb923c;
+  --yellow:#fbbf24;--teal:#2dd4bf;--cyan:#22d3ee;--green:#4ade80;--red:#f87171;
+  --text:#f1f5f9;--muted:#64748b;--muted2:#94a3b8;
+  --font:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;--display:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 0% 0%,rgba(124,58,237,.1) 0%,transparent 50%),
+             radial-gradient(ellipse 60% 60% at 100% 100%,rgba(244,114,182,.08) 0%,transparent 50%),
+             radial-gradient(ellipse 50% 50% at 50% 30%,rgba(34,211,238,.04) 0%,transparent 50%);}
+
+/* ── SIDEBAR ── */
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:255px;background:rgba(10,12,22,.97);
+  border-right:1px solid var(--border);backdrop-filter:blur(20px);z-index:100;
+  display:flex;flex-direction:column;overflow:hidden;}
+.sb-logo{padding:1.2rem 1.4rem .8rem;border-bottom:1px solid var(--border);}
+.logo-text{font-family:var(--display);font-size:1.5rem;font-weight:800;
+  background:linear-gradient(135deg,var(--violet),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-ver{font-size:.65rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:.1rem;}
+
+.sb-stats{padding:.7rem 1.1rem;border-bottom:1px solid var(--border);display:flex;gap:.5rem;}
+.stat-pill{flex:1;background:var(--card2);border-radius:10px;padding:.5rem .6rem;text-align:center;border:1px solid var(--border);}
+.stat-pill-val{font-family:var(--display);font-size:1.1rem;font-weight:700;color:var(--violet);}
+.stat-pill-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+
+.xp-section{padding:.6rem 1.1rem .4rem;}
+.xp-top{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:.35rem;}
+.xp-top span:first-child{color:var(--muted);}
+.xp-top span:last-child{color:var(--violet);font-weight:700;}
+.xp-track{height:5px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:99px;transition:width .5s ease;}
+
+.sb-nav{flex:1;overflow-y:auto;padding:.5rem 0 1rem;}
+.sb-nav::-webkit-scrollbar{width:3px;}
+.sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:99px;}
+.nav-sec{padding:.6rem 1.1rem .2rem;font-size:.6rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:700;}
+.nav-it{display:flex;align-items:center;gap:.6rem;padding:.55rem 1.1rem;cursor:pointer;
+  color:var(--muted2);font-size:.83rem;font-weight:500;transition:all .15s;position:relative;}
+.nav-it:hover{color:var(--text);background:rgba(255,255,255,.03);}
+.nav-it.active{color:var(--text);background:rgba(124,58,237,.1);}
+.nav-it.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2.5px;background:var(--purple);border-radius:0 3px 3px 0;}
+.nav-ico{font-size:.95rem;width:18px;text-align:center;}
+.nav-chip{margin-left:auto;font-size:.6rem;padding:.1rem .4rem;border-radius:99px;font-weight:700;}
+.chip-new{background:rgba(124,58,237,.25);color:var(--violet);}
+.chip-done{background:rgba(74,222,128,.2);color:var(--green);}
+.chip-lock{background:rgba(255,255,255,.05);color:var(--muted);}
+.chip-proj{background:rgba(251,191,36,.2);color:var(--yellow);}
+
+/* ── MAIN ── */
+#main{margin-left:255px;min-height:100vh;position:relative;z-index:1;}
+.page{display:none;padding:1.8rem 2.2rem;animation:fadeIn .25s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── HOME ── */
+.hero{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(244,114,182,.07));
+  border:1px solid rgba(124,58,237,.18);border-radius:18px;padding:2rem 2rem 1.8rem;
+  margin-bottom:1.5rem;position:relative;overflow:hidden;}
+.hero::after{content:'>>>'; position:absolute;right:1.8rem;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:4.5rem;font-weight:600;color:rgba(124,58,237,.1);pointer-events:none;}
+.hero h1{font-family:var(--display);font-size:2rem;font-weight:800;line-height:1.15;margin-bottom:.5rem;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--violet),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:var(--muted2);font-size:.88rem;max-width:500px;line-height:1.65;}
+.hero-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem;}
+.htag{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:99px;
+  padding:.2rem .7rem;font-size:.72rem;color:var(--muted2);}
+
+.sec-title{font-family:var(--display);font-size:1.1rem;font-weight:700;margin-bottom:1rem;}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.9rem;margin-bottom:2rem;}
+.mod-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:1.2rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.mod-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.1);box-shadow:0 12px 32px rgba(0,0,0,.35);}
+.mod-card.locked{opacity:.45;cursor:not-allowed;}
+.mod-card.locked:hover{transform:none;box-shadow:none;}
+.mod-accent{position:absolute;top:0;left:0;right:0;height:2.5px;border-radius:14px 14px 0 0;}
+.mod-icon{font-size:1.8rem;margin-bottom:.6rem;}
+.mod-title{font-family:var(--display);font-weight:700;font-size:.95rem;margin-bottom:.15rem;}
+.mod-sub{font-size:.7rem;color:var(--muted);margin-bottom:.8rem;font-style:italic;}
+.mod-footer{display:flex;align-items:center;gap:.5rem;}
+.mod-bar{flex:1;height:3px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;}
+.mod-fill{height:100%;border-radius:99px;transition:width .5s;}
+.mod-pct{font-size:.68rem;color:var(--muted);min-width:26px;text-align:right;}
+.mod-type-badge{font-size:.62rem;padding:.12rem .4rem;border-radius:99px;font-weight:700;margin-left:auto;}
+.badge-proj{background:rgba(251,191,36,.18);color:var(--yellow);}
+
+/* ── LESSON ── */
+.lesson-hdr{display:flex;align-items:center;gap:.8rem;margin-bottom:1.4rem;}
+.btn-back{background:var(--card);border:1px solid var(--border);border-radius:9px;
+  padding:.45rem .8rem;cursor:pointer;font-size:.78rem;color:var(--muted2);
+  transition:all .15s;font-family:var(--font);}
+.btn-back:hover{color:var(--text);border-color:rgba(255,255,255,.12);}
+.lesson-title h2{font-family:var(--display);font-size:1.4rem;font-weight:800;}
+.lesson-title p{font-size:.78rem;color:var(--muted);}
+
+.lesson-layout{display:grid;grid-template-columns:1fr 340px;gap:1.3rem;align-items:start;}
+@media(max-width:860px){.lesson-layout{grid-template-columns:1fr;}}
+
+.theory-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.theory-tabs{display:flex;border-bottom:1px solid var(--border);}
+.t-tab{padding:.65rem 1.1rem;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--muted);
+  border:none;border-bottom:2px solid transparent;background:none;font-family:var(--font);transition:all .15s;}
+.t-tab:hover{color:var(--text);}
+.t-tab.active{color:var(--text);border-bottom-color:var(--purple);}
+.t-body{display:none;padding:1.3rem;}
+.t-body.active{display:block;}
+
+/* Theory content styles */
+.c-title{font-family:var(--display);font-weight:700;font-size:1.05rem;color:var(--violet);margin-bottom:.7rem;}
+.c-text{font-size:.85rem;line-height:1.8;color:#cbd5e1;}
+.c-text p{margin-bottom:.7rem;}
+.c-text strong{color:var(--text);}
+.c-text code{font-family:var(--mono);font-size:.8rem;background:rgba(255,255,255,.07);padding:.1rem .35rem;border-radius:4px;color:var(--cyan);}
+.cb{background:#0a0c16;border:1px solid rgba(124,58,237,.18);border-radius:11px;padding:1.1rem;margin:.9rem 0;position:relative;overflow:hidden;}
+.cb::before{content:'';position:absolute;top:0;left:0;right:0;height:26px;background:rgba(255,255,255,.025);border-bottom:1px solid rgba(255,255,255,.04);}
+.cb-dots{position:absolute;top:7px;left:10px;display:flex;gap:4px;}
+.cb-dots span{width:9px;height:9px;border-radius:50%;}
+.cb-dots span:nth-child(1){background:#f87171;}.cb-dots span:nth-child(2){background:#fbbf24;}.cb-dots span:nth-child(3){background:#4ade80;}
+.cb-lang{position:absolute;top:6px;right:10px;font-size:.6rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+pre{font-family:var(--mono);font-size:.79rem;line-height:1.75;color:#e2e8f0;margin-top:1.1rem;overflow-x:auto;white-space:pre;}
+.kw{color:#a78bfa;}.fn{color:#22d3ee;}.st{color:#f472b6;}.num{color:#fb923c;}
+.cm{color:#3d4f6b;font-style:italic;}.var{color:#e2e8f0;}.op{color:#64748b;}
+.tip{background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.18);border-radius:9px;padding:.75rem .9rem;margin:.7rem 0;font-size:.8rem;color:#bae6fd;line-height:1.6;}
+.tip::before{content:'💡 ';}
+.warn{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.18);border-radius:9px;padding:.75rem .9rem;margin:.7rem 0;font-size:.8rem;color:#fef3c7;line-height:1.6;}
+.warn::before{content:'⚠️ ';}
+
+/* ── QUIZ PANEL ── */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:sticky;top:1.8rem;}
+.qc-head{padding:.9rem 1.1rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(244,114,182,.06));}
+.qc-head h3{font-family:var(--display);font-size:.95rem;font-weight:700;}
+.qc-head p{font-size:.7rem;color:var(--muted);margin-top:.15rem;}
+.qc-prog{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.1rem;border-bottom:1px solid var(--border);font-size:.75rem;}
+.qc-num{color:var(--violet);font-weight:700;}
+.qtype{padding:.15rem .45rem;border-radius:99px;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.qt-mc{background:rgba(124,58,237,.2);color:var(--violet);}
+.qt-fill{background:rgba(251,191,36,.2);color:var(--yellow);}
+.qt-sort{background:rgba(45,212,191,.2);color:var(--teal);}
+.qc-body{padding:1.1rem;}
+.q-text{font-size:.85rem;font-weight:600;line-height:1.55;margin-bottom:.9rem;}
+.q-text code{font-family:var(--mono);font-size:.79rem;background:rgba(255,255,255,.07);padding:.1rem .35rem;border-radius:4px;color:var(--cyan);}
+
+.mc-list{display:flex;flex-direction:column;gap:.45rem;}
+.mc-opt{display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.03);
+  border:1.5px solid rgba(255,255,255,.07);border-radius:9px;padding:.6rem .85rem;
+  cursor:pointer;font-size:.8rem;transition:all .15s;font-family:var(--font);}
+.mc-opt:hover{background:rgba(124,58,237,.1);border-color:rgba(124,58,237,.35);}
+.mc-opt.sel{background:rgba(124,58,237,.15);border-color:var(--purple);}
+.mc-opt.ok{background:rgba(74,222,128,.1);border-color:var(--green);color:var(--green);}
+.mc-opt.bad{background:rgba(248,113,113,.1);border-color:var(--red);color:var(--red);}
+.mc-ltr{width:20px;height:20px;border-radius:5px;background:rgba(255,255,255,.05);
+  font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--muted);}
+.mc-opt.sel .mc-ltr{background:var(--purple);color:#fff;}
+.mc-opt.ok .mc-ltr{background:var(--green);color:#fff;}
+.mc-opt.bad .mc-ltr{background:var(--red);color:#fff;}
+
+.fill-pre{font-family:var(--mono);font-size:.77rem;background:#0a0c16;border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:.7rem .9rem;margin-bottom:.5rem;line-height:1.8;color:#e2e8f0;}
+.fill-inp{width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:9px;padding:.55rem .85rem;color:var(--text);font-family:var(--mono);font-size:.8rem;outline:none;transition:border .15s;}
+.fill-inp:focus{border-color:var(--purple);}
+.fill-inp.ok{border-color:var(--green);background:rgba(74,222,128,.07);}
+.fill-inp.bad{border-color:var(--red);background:rgba(248,113,113,.07);}
+
+.sort-list{display:flex;flex-direction:column;gap:.4rem;}
+.sort-it{display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.03);
+  border:1.5px solid rgba(255,255,255,.07);border-radius:9px;padding:.55rem .8rem;
+  cursor:grab;font-family:var(--mono);font-size:.75rem;transition:all .15s;color:#e2e8f0;user-select:none;}
+.sort-it:hover{background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.25);}
+.sort-it.dragging{opacity:.3;}
+.sort-it.over{background:rgba(45,212,191,.14);border-color:var(--teal);}
+.sort-it.ok{border-color:var(--green);background:rgba(74,222,128,.08);}
+.sort-it.bad{border-color:var(--red);background:rgba(248,113,113,.08);}
+.drag-h{color:var(--muted);font-size:.85rem;}
+
+.fb{border-radius:9px;padding:.65rem .9rem;font-size:.78rem;line-height:1.55;margin-top:.55rem;display:none;}
+.fb.ok{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25);color:#bbf7d0;display:block;}
+.fb.bad{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);color:#fecaca;display:block;}
+
+.qa{margin-top:.9rem;display:flex;flex-direction:column;gap:.4rem;}
+.btn-check{background:linear-gradient(135deg,var(--purple),var(--pink));border:none;border-radius:9px;
+  padding:.65rem;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .18s;font-family:var(--font);}
+.btn-check:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,.35);}
+.btn-check:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-nxt{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;
+  padding:.6rem;color:var(--text);font-size:.79rem;font-weight:600;cursor:pointer;
+  transition:all .15s;font-family:var(--font);display:none;}
+.btn-nxt:hover{background:rgba(255,255,255,.09);}
+
+/* ── RESULT ── */
+.result-box{display:none;flex-direction:column;align-items:center;padding:1.8rem 1.1rem;text-align:center;}
+.result-box.show{display:flex;}
+.res-emoji{font-size:3rem;animation:pop .5s ease;margin-bottom:.6rem;}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.res-title{font-family:var(--display);font-size:1.2rem;font-weight:800;margin-bottom:.3rem;}
+.res-score{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,var(--violet),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.res-sub{font-size:.78rem;color:var(--muted);margin:.3rem 0 1rem;}
+.res-xp{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.22);border-radius:9px;padding:.5rem 1rem;font-size:.82rem;color:var(--yellow);font-weight:700;margin-bottom:.9rem;}
+.btn-retry{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:.6rem 1.3rem;color:var(--text);font-size:.79rem;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s;margin-bottom:.4rem;}
+.btn-retry:hover{background:rgba(255,255,255,.09);}
+.btn-project{background:linear-gradient(135deg,var(--yellow),var(--orange));border:none;border-radius:9px;padding:.6rem 1.3rem;color:#1a0a00;font-size:.79rem;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s;display:none;}
+.btn-project:hover{transform:translateY(-1px);}
+
+/* ── CODE EDITOR ── */
+.editor-layout{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-items:start;}
+@media(max-width:900px){.editor-layout{grid-template-columns:1fr;}}
+.editor-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.editor-hdr{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
+.editor-hdr-l{display:flex;align-items:center;gap:.6rem;}
+.editor-dots{display:flex;gap:4px;}
+.editor-dots span{width:9px;height:9px;border-radius:50%;}
+.editor-dots span:nth-child(1){background:#f87171;}.editor-dots span:nth-child(2){background:#fbbf24;}.editor-dots span:nth-child(3){background:#4ade80;}
+.editor-label{font-size:.72rem;color:var(--muted);letter-spacing:.06em;}
+.btn-run{background:linear-gradient(135deg,var(--green),var(--teal));border:none;border-radius:7px;
+  padding:.35rem .8rem;color:#052e16;font-size:.75rem;font-weight:700;cursor:pointer;
+  transition:all .15s;font-family:var(--font);display:flex;align-items:center;gap:.3rem;}
+.btn-run:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(74,222,128,.3);}
+.btn-run:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-clr{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:.35rem .6rem;color:var(--muted);font-size:.72rem;cursor:pointer;font-family:var(--font);transition:all .15s;}
+.btn-clr:hover{color:var(--text);border-color:rgba(255,255,255,.14);}
+
+textarea#code-editor{width:100%;min-height:280px;background:#090b15;border:none;outline:none;resize:vertical;
+  font-family:var(--mono);font-size:.8rem;color:#e2e8f0;line-height:1.75;padding:1rem;
+  caret-color:var(--violet);tab-size:4;}
+textarea#code-editor::selection{background:rgba(124,58,237,.3);}
+
+.output-area{min-height:200px;background:#090b15;font-family:var(--mono);font-size:.8rem;
+  line-height:1.75;padding:1rem;color:#e2e8f0;overflow-y:auto;max-height:400px;white-space:pre-wrap;}
+.out-ok{color:var(--green);}
+.out-err{color:var(--red);}
+.out-line{color:#e2e8f0;}
+.out-hint{color:var(--muted);font-style:italic;}
+.pyodide-loading{display:flex;align-items:center;gap:.5rem;color:var(--yellow);font-size:.78rem;padding:.5rem 1rem;}
+.loading-dot{width:6px;height:6px;border-radius:50%;background:var(--yellow);animation:blink 1s infinite;}
+.loading-dot:nth-child(2){animation-delay:.2s;}
+.loading-dot:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+
+.editor-tasks{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-top:1.2rem;}
+.task-title{font-family:var(--display);font-weight:700;font-size:.95rem;margin-bottom:.8rem;color:var(--cyan);}
+.task-item{display:flex;align-items:flex-start;gap:.6rem;padding:.6rem .8rem;background:var(--card2);border-radius:9px;margin-bottom:.5rem;border:1px solid var(--border);}
+.task-num{font-size:.7rem;font-weight:700;color:var(--violet);min-width:20px;}
+.task-text{font-size:.8rem;color:var(--muted2);line-height:1.5;}
+.task-check{margin-left:auto;font-size:.8rem;cursor:pointer;}
+.task-item.done .task-text{text-decoration:line-through;color:var(--muted);}
+.task-item.done .task-check::before{content:'✅';}
+.task-item:not(.done) .task-check::before{content:'⬜';}
+
+/* ── PROJECT PAGE ── */
+.proj-hdr{display:flex;align-items:center;gap:.8rem;margin-bottom:1.4rem;}
+.proj-meta{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.3rem;margin-bottom:1.2rem;}
+.proj-title-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.6rem;}
+.proj-icon{font-size:2rem;}
+.proj-name{font-family:var(--display);font-size:1.3rem;font-weight:800;}
+.proj-desc{font-size:.83rem;color:var(--muted2);line-height:1.6;margin-bottom:1rem;}
+.proj-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.7rem;margin-bottom:1rem;}
+.proj-step{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;}
+.step-n{font-size:.65rem;font-weight:700;color:var(--violet);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem;}
+.step-t{font-size:.8rem;font-weight:600;margin-bottom:.15rem;}
+.step-s{font-size:.72rem;color:var(--muted);}
+.proj-req{background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.18);border-radius:10px;padding:.8rem 1rem;font-size:.8rem;color:#fef3c7;line-height:1.7;}
+.proj-req strong{color:var(--yellow);}
+
+/* ── DASHBOARD ── */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.9rem;margin-bottom:1.8rem;}
+.dash-stat{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:1.1rem;}
+.ds-icon{font-size:1.4rem;margin-bottom:.35rem;}
+.ds-val{font-family:var(--display);font-size:1.9rem;font-weight:800;}
+.ds-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:.1rem;}
+.badges-wrap h3{font-family:var(--display);font-size:1.05rem;font-weight:700;margin-bottom:.9rem;}
+.badges-row{display:flex;flex-wrap:wrap;gap:.6rem;}
+.bdg{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.7rem .9rem;
+  display:flex;flex-direction:column;align-items:center;gap:.3rem;min-width:85px;transition:all .18s;}
+.bdg:not(.bdg-locked):hover{transform:translateY(-2px);border-color:rgba(255,255,255,.12);}
+.bdg.bdg-locked{opacity:.3;filter:grayscale(1);}
+.bdg-e{font-size:1.7rem;}.bdg-n{font-size:.62rem;font-weight:700;text-align:center;color:var(--muted);}
+.bdg:not(.bdg-locked) .bdg-n{color:var(--text);}
+
+/* ── PAGE TITLE ── */
+.pg-title{font-family:var(--display);font-size:1.6rem;font-weight:800;margin-bottom:.3rem;}
+.pg-sub{font-size:.83rem;color:var(--muted);margin-bottom:1.5rem;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.8rem;right:1.8rem;z-index:9999;
+  background:rgba(15,20,36,.97);border:1px solid rgba(124,58,237,.3);border-radius:12px;
+  padding:.8rem 1.1rem;font-size:.82rem;display:flex;align-items:center;gap:.6rem;
+  box-shadow:0 12px 32px rgba(0,0,0,.5);backdrop-filter:blur(16px);
+  transform:translateY(16px) scale(.96);opacity:0;transition:all .25s ease;pointer-events:none;min-width:200px;}
+.toast.show{transform:none;opacity:1;}
+
+/* ── PYODIDE STATUS ── */
+#py-status{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  background:rgba(15,20,36,.97);border:1px solid rgba(34,211,238,.25);border-radius:10px;
+  padding:.6rem 1.1rem;font-size:.78rem;color:var(--cyan);display:none;
+  align-items:center;gap:.5rem;z-index:500;backdrop-filter:blur(12px);}
+#py-status.show{display:flex;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <div class="logo-text">PyPath</div>
+    <div class="logo-ver">v2.0 · Learn Python</div>
+  </div>
+  <div class="sb-stats">
+    <div class="stat-pill"><div class="stat-pill-val" id="sb-xp">0</div><div class="stat-pill-lbl">XP</div></div>
+    <div class="stat-pill"><div class="stat-pill-val" id="sb-streak">1</div><div class="stat-pill-lbl">🔥 Streak</div></div>
+    <div class="stat-pill"><div class="stat-pill-val" id="sb-done">0/6</div><div class="stat-pill-lbl">Done</div></div>
+  </div>
+  <div class="xp-section">
+    <div class="xp-top"><span>Level Progress</span><span id="xp-txt">0 / 300 XP</span></div>
+    <div class="xp-track"><div class="xp-fill" id="xp-bar" style="width:0%"></div></div>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-sec">Tổng Quan</div>
+    <div class="nav-it active" onclick="gotoPage('home')"><span class="nav-ico">🏠</span>Trang Chủ</div>
+    <div class="nav-it" onclick="gotoPage('editor')"><span class="nav-ico">💻</span>Code Editor <span class="nav-chip chip-new">Mới</span></div>
+    <div class="nav-it" onclick="gotoPage('dashboard')"><span class="nav-ico">📊</span>Dashboard</div>
+    <div class="nav-sec" style="margin-top:.4rem">Bài Học</div>
+    <div class="nav-it" id="nav-0" onclick="openLesson(0)"><span class="nav-ico">📦</span>Biến & Kiểu DL<span class="nav-chip chip-new" id="nc-0">Mới</span></div>
+    <div class="nav-it" id="nav-1" onclick="openLesson(1)"><span class="nav-ico">🔁</span>Vòng Lặp<span class="nav-chip chip-lock" id="nc-1">🔒</span></div>
+    <div class="nav-it" id="nav-2" onclick="openLesson(2)"><span class="nav-ico">⚙️</span>Hàm<span class="nav-chip chip-lock" id="nc-2">🔒</span></div>
+    <div class="nav-it" id="nav-3" onclick="openLesson(3)"><span class="nav-ico">🔀</span>Điều Kiện<span class="nav-chip chip-lock" id="nc-3">🔒</span></div>
+    <div class="nav-it" id="nav-4" onclick="openLesson(4)"><span class="nav-ico">📋</span>List & Dict<span class="nav-chip chip-lock" id="nc-4">🔒</span></div>
+    <div class="nav-it" id="nav-5" onclick="openLesson(5)"><span class="nav-ico">🏛️</span>OOP<span class="nav-chip chip-lock" id="nc-5">🔒</span></div>
+    <div class="nav-sec" style="margin-top:.4rem">Mini Projects 🚀</div>
+    <div class="nav-it" id="nav-p0" onclick="openProject(0)"><span class="nav-ico">🔢</span>Máy Tính<span class="nav-chip chip-proj" id="ncp-0">🔒</span></div>
+    <div class="nav-it" id="nav-p1" onclick="openProject(1)"><span class="nav-ico">🎮</span>Game Đoán Số<span class="nav-chip chip-proj" id="ncp-1">🔒</span></div>
+    <div class="nav-it" id="nav-p2" onclick="openProject(2)"><span class="nav-ico">📋</span>To-Do List<span class="nav-chip chip-proj" id="ncp-2">🔒</span></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <h1>Chào mừng đến <em>PyPath</em> 🐍</h1>
+    <p>Học Python qua 6 bài giảng, code editor thật chạy trực tiếp trên trình duyệt, và 3 mini project thực tế. Hoàn thành từng bài để mở khoá bài tiếp theo!</p>
+    <div class="hero-tags">
+      <span class="htag">💻 Code Editor thật (Pyodide)</span>
+      <span class="htag">🎮 Quiz 3 kiểu</span>
+      <span class="htag">🚀 Mini Projects</span>
+      <span class="htag">⭐ Gamification</span>
+    </div>
+  </div>
+  <div class="sec-title">📚 6 Bài Học</div>
+  <div class="modules-grid" id="modules-grid"></div>
+  <div class="sec-title">🚀 Mini Projects</div>
+  <div class="modules-grid" id="projects-grid"></div>
+</div>
+
+<!-- LESSON -->
+<div class="page" id="page-lesson">
+  <div class="lesson-hdr">
+    <button class="btn-back" onclick="gotoPage('home')">← Quay Lại</button>
+    <div class="lesson-title"><h2 id="ls-title">Bài Học</h2><p id="ls-sub">Đọc lý thuyết → Làm quiz bên phải</p></div>
+  </div>
+  <div class="lesson-layout">
+    <div class="theory-card">
+      <div class="theory-tabs">
+        <button class="t-tab active" onclick="swTab('theory',this)">📖 Lý Thuyết</button>
+        <button class="t-tab" onclick="swTab('example',this)">💡 Ví Dụ</button>
+        <button class="t-tab" onclick="swTab('note',this)">📝 Ghi Nhớ</button>
+      </div>
+      <div class="t-body active" id="tb-theory"></div>
+      <div class="t-body" id="tb-example"></div>
+      <div class="t-body" id="tb-note"></div>
+    </div>
+    <div class="quiz-card">
+      <div id="quiz-main">
+        <div class="qc-head"><h3>🎮 Kiểm Tra Kiến Thức</h3><p id="qp-sub">Sau khi đọc xong lý thuyết</p></div>
+        <div class="qc-prog"><span class="qc-num" id="qnum">Câu 1/5</span><span class="qtype qt-mc" id="qbadge">Trắc nghiệm</span></div>
+        <div class="qc-body">
+          <div class="q-text" id="qtext"></div>
+          <div id="qarea"></div>
+          <div class="fb" id="qfb"></div>
+          <div class="qa">
+            <button class="btn-check" id="btn-check" onclick="checkAns()">✓ Kiểm Tra</button>
+            <button class="btn-nxt" id="btn-nxt" onclick="nextQ()">Câu Tiếp →</button>
+          </div>
+        </div>
+      </div>
+      <div class="result-box" id="quiz-result">
+        <div class="res-emoji" id="res-e">🎉</div>
+        <div class="res-title">Hoàn Thành!</div>
+        <div class="res-score" id="res-s">5/5</div>
+        <div class="res-sub" id="res-sub">Tuyệt vời!</div>
+        <div class="res-xp" id="res-xp">+50 XP</div>
+        <button class="btn-retry" onclick="retryQuiz()">🔄 Làm Lại</button>
+        <button class="btn-project" id="btn-go-proj" onclick="goToProject()">🚀 Làm Mini Project!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CODE EDITOR -->
+<div class="page" id="page-editor">
+  <div class="pg-title">💻 Code Editor</div>
+  <div class="pg-sub">Chạy Python thật trực tiếp trên trình duyệt — không cần cài đặt! · Run real Python right in your browser!</div>
+  <div class="editor-layout">
+    <div>
+      <div class="editor-card">
+        <div class="editor-hdr">
+          <div class="editor-hdr-l">
+            <div class="editor-dots"><span></span><span></span><span></span></div>
+            <span class="editor-label">main.py</span>
+          </div>
+          <div style="display:flex;gap:.4rem;">
+            <button class="btn-clr" onclick="clearEditor()">🗑 Xoá</button>
+            <button class="btn-clr" onclick="loadSample()">📂 Ví dụ</button>
+            <button class="btn-run" id="btn-run" onclick="runCode()"><span>▶</span> Chạy</button>
+          </div>
+        </div>
+        <textarea id="code-editor" spellcheck="false" placeholder="# Viết code Python của bạn ở đây...
+# Write your Python code here...
+
+print('Hello, PyPath! 🐍')"># Viết code Python của bạn ở đây!
+# Write your Python code here!
+
+name = "PyPath"
+version = 2.0
+
+print(f"Chào mừng đến {name} v{version}!")
+print("Học Python thật vui! 🐍")
+
+# Thử một vòng lặp
+for i in range(1, 6):
+    print(f"  Bài học {i} ⭐")</textarea>
+      </div>
+      <div class="editor-card" style="margin-top:1rem;">
+        <div class="editor-hdr">
+          <div class="editor-hdr-l">
+            <div class="editor-dots"><span></span><span></span><span></span></div>
+            <span class="editor-label">output</span>
+          </div>
+          <button class="btn-clr" onclick="clearOutput()">Xoá output</button>
+        </div>
+        <div class="output-area" id="output-area">
+          <div class="out-hint"># Output sẽ hiện ở đây khi bạn nhấn ▶ Chạy
+# Press ▶ Run to see output here</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="editor-tasks">
+        <div class="task-title">📝 Thử Thách Nhanh · Quick Challenges</div>
+        <div id="task-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT -->
+<div class="page" id="page-project">
+  <div class="proj-hdr">
+    <button class="btn-back" onclick="gotoPage('home')">← Quay Lại</button>
+    <div class="lesson-title"><h2 id="proj-title-h">Mini Project</h2><p>Áp dụng kiến thức vào dự án thực tế!</p></div>
+  </div>
+  <div class="proj-meta" id="proj-meta"></div>
+  <div class="editor-layout">
+    <div>
+      <div class="editor-card">
+        <div class="editor-hdr">
+          <div class="editor-hdr-l">
+            <div class="editor-dots"><span></span><span></span><span></span></div>
+            <span class="editor-label" id="proj-filename">project.py</span>
+          </div>
+          <div style="display:flex;gap:.4rem;">
+            <button class="btn-clr" onclick="loadProjectCode()">↺ Reset</button>
+            <button class="btn-run" id="btn-run-proj" onclick="runProjectCode()"><span>▶</span> Chạy</button>
+          </div>
+        </div>
+        <textarea id="proj-editor" spellcheck="false" style="width:100%;min-height:320px;background:#090b15;border:none;outline:none;resize:vertical;font-family:var(--mono);font-size:.8rem;color:#e2e8f0;line-height:1.75;padding:1rem;tab-size:4;"></textarea>
+      </div>
+      <div class="editor-card" style="margin-top:1rem;">
+        <div class="editor-hdr">
+          <div class="editor-hdr-l"><div class="editor-dots"><span></span><span></span><span></span></div><span class="editor-label">output</span></div>
+          <button class="btn-clr" onclick="clearProjOutput()">Xoá</button>
+        </div>
+        <div class="output-area" id="proj-output">
+          <div class="out-hint"># Nhấn ▶ Chạy để xem kết quả</div>
+        </div>
+      </div>
+    </div>
+    <div id="proj-steps-panel"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="pg-title">📊 Dashboard</div>
+  <div class="pg-sub">Tiến độ học tập của bạn · Your learning progress</div>
+  <div class="dash-grid">
+    <div class="dash-stat"><div class="ds-icon">⭐</div><div class="ds-val" id="d-xp">0</div><div class="ds-lbl">XP Tích Lũy</div></div>
+    <div class="dash-stat"><div class="ds-icon">🔥</div><div class="ds-val" id="d-str">1</div><div class="ds-lbl">Ngày Streak</div></div>
+    <div class="dash-stat"><div class="ds-icon">✅</div><div class="ds-val" id="d-done">0/6</div><div class="ds-lbl">Bài Hoàn Thành</div></div>
+    <div class="dash-stat"><div class="ds-icon">🎯</div><div class="ds-val" id="d-acc">—</div><div class="ds-lbl">Độ Chính Xác</div></div>
+    <div class="dash-stat"><div class="ds-icon">🚀</div><div class="ds-val" id="d-proj">0/3</div><div class="ds-lbl">Projects</div></div>
+    <div class="dash-stat"><div class="ds-icon">💻</div><div class="ds-val" id="d-runs">0</div><div class="ds-lbl">Lần Chạy Code</div></div>
+  </div>
+  <div class="badges-wrap"><h3>🏆 Huy Hiệu · Badges</h3><div class="badges-row" id="badges-row"></div></div>
+</div>
+
+</main>
+
+<div id="py-status"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><span id="py-status-txt">Đang tải Python...</span></div>
+<div class="toast" id="toast"><span id="t-icon">🎉</span><span id="t-msg"></span></div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+// LESSON DATA
+// ═══════════════════════════════════════════════════════
+const LESSONS = [
+ {id:0,title:"Biến & Kiểu Dữ Liệu",sub:"Variables & Data Types",icon:"📦",color:"#7c3aed",
+  theory:`<div class="c-title">📦 Biến là gì? · What is a Variable?</div><div class="c-text"><p>Biến là một <strong>ô nhớ có tên</strong> dùng để lưu dữ liệu. Python tự nhận diện kiểu — không cần khai báo.</p><p>A variable is a <strong>named storage</strong> for data. Python is dynamically typed!</p></div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="cm"># Tạo biến / Create variables</span>
+<span class="var">ten</span> <span class="op">=</span> <span class="st">"Python"</span>      <span class="cm"># str</span>
+<span class="var">tuoi</span> <span class="op">=</span> <span class="num">20</span>           <span class="cm"># int</span>
+<span class="var">diem</span> <span class="op">=</span> <span class="num">9.5</span>          <span class="cm"># float</span>
+<span class="var">gioi</span> <span class="op">=</span> <span class="kw">True</span>         <span class="cm"># bool</span>
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="var">diem</span>))   <span class="cm"># &lt;class 'float'&gt;</span></pre></div><div class="tip">Dùng <code>type(x)</code> để xem kiểu dữ liệu bất kỳ lúc nào!</div>`,
+  example:`<div class="c-title">💡 Ví Dụ Thực Tế</div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="cm"># Chuyển đổi kiểu / Type conversion</span>
+<span class="var">so</span>  <span class="op">=</span> <span class="fn">int</span>(<span class="st">"42"</span>)     <span class="cm"># str→int</span>
+<span class="var">chu</span> <span class="op">=</span> <span class="fn">str</span>(<span class="num">3.14</span>)     <span class="cm"># float→str</span>
+
+<span class="cm"># f-string formatting</span>
+<span class="var">name</span> <span class="op">=</span> <span class="st">"Phượng"</span>
+<span class="var">score</span> <span class="op">=</span> <span class="num">9.5</span>
+<span class="fn">print</span>(<span class="st">f"</span><span class="var">{name}</span><span class="st"> đạt </span><span class="var">{score}</span><span class="st"> điểm"</span>)
+
+<span class="cm"># Nhập liệu từ người dùng</span>
+<span class="var">x</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Nhập số: "</span>)
+<span class="fn">print</span>(<span class="st">f"Bạn nhập: </span><span class="var">{x}</span><span class="st">"</span>)</pre></div><div class="warn">Không dùng tên biến là từ khoá Python: <code>if, for, while, def, True, False, None</code></div>`,
+  note:`<div class="c-title">📝 Ghi Nhớ Nhanh</div><div class="c-text"><p>• <code>int</code> — Số nguyên: 1, -5, 100</p><p>• <code>float</code> — Số thực: 3.14, 9.5</p><p>• <code>str</code> — Chuỗi: "hello", 'python'</p><p>• <code>bool</code> — True / False</p><p>• <code>type(x)</code> — kiểm tra kiểu</p><p>• <code>int(), str(), float()</code> — chuyển kiểu</p></div><div class="tip">f-string: <code>f"Xin chào {ten}!"</code> — cách in đẹp nhất!</div>`,
+  qs:[
+    {type:"mc",q:"Kết quả của <code>type(3.14)</code> là gì?",opts:["&lt;class 'int'&gt;","&lt;class 'float'&gt;","&lt;class 'str'&gt;","&lt;class 'num'&gt;"],ans:1,ex:"3.14 là số thực → float."},
+    {type:"fill",q:"Điền để tạo biến lưu tên:",pre:'___ = "Python"',blank:"ten",fill:"ten",ex:"Tên biến có thể là bất kỳ từ nào (không là từ khoá)."},
+    {type:"sort",q:"Sắp xếp để in 'Xin chào Phượng!':",items:['print(f"Xin chào {ten}!")',"ten = \"Phượng\"","# khai báo biến"],correct:[2,1,0],ex:"Khai báo biến trước → dùng trong print."},
+    {type:"mc",q:"Hàm nào chuyển chuỗi '99' thành số nguyên?",opts:["str('99')","float('99')","int('99')","num('99')"],ans:2,ex:"int() chuyển sang số nguyên."},
+    {type:"mc",q:"<code>type('hello')</code> trả về gì?",opts:["int","float","str","bool"],ans:2,ex:"'hello' là chuỗi ký tự → str."},
+  ],projIdx:0},
+
+ {id:1,title:"Vòng Lặp",sub:"for & while Loops",icon:"🔁",color:"#0891b2",
+  theory:`<div class="c-title">🔁 Vòng Lặp · Loops</div><div class="c-text"><p>Vòng lặp giúp <strong>thực hiện code nhiều lần</strong> mà không cần viết lại. Python có <code>for</code> và <code>while</code>.</p></div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="cm"># for — lặp qua dãy số</span>
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
+    <span class="fn">print</span>(<span class="var">i</span>)        <span class="cm"># 0 1 2 3 4</span>
+
+<span class="cm"># for — lặp qua list</span>
+<span class="var">fruits</span> <span class="op">=</span> [<span class="st">"táo"</span>, <span class="st">"cam"</span>, <span class="st">"xoài"</span>]
+<span class="kw">for</span> <span class="var">f</span> <span class="kw">in</span> <span class="var">fruits</span>:
+    <span class="fn">print</span>(<span class="var">f</span>)
+
+<span class="cm"># while — lặp khi điều kiện đúng</span>
+<span class="var">n</span> <span class="op">=</span> <span class="num">0</span>
+<span class="kw">while</span> <span class="var">n</span> <span class="op">&lt;</span> <span class="num">3</span>:
+    <span class="fn">print</span>(<span class="st">"Hello!"</span>)
+    <span class="var">n</span> <span class="op">+=</span> <span class="num">1</span></pre></div><div class="tip">range(5) tạo dãy 0,1,2,3,4 — 5 phần tử bắt đầu từ 0.</div>`,
+  example:`<div class="c-title">💡 break & continue</div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="cm"># Tính tổng 1→10</span>
+<span class="var">tong</span> <span class="op">=</span> <span class="num">0</span>
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>,<span class="num">11</span>):
+    <span class="var">tong</span> <span class="op">+=</span> <span class="var">i</span>
+<span class="fn">print</span>(<span class="var">tong</span>)    <span class="cm"># 55</span>
+
+<span class="cm"># break — dừng vòng lặp</span>
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):
+    <span class="kw">if</span> <span class="var">i</span> <span class="op">==</span> <span class="num">5</span>: <span class="kw">break</span>
+    <span class="fn">print</span>(<span class="var">i</span>)   <span class="cm"># 0 1 2 3 4</span>
+
+<span class="cm"># continue — bỏ qua</span>
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
+    <span class="kw">if</span> <span class="var">i</span> <span class="op">==</span> <span class="num">2</span>: <span class="kw">continue</span>
+    <span class="fn">print</span>(<span class="var">i</span>)   <span class="cm"># 0 1 3 4</span></pre></div>`,
+  note:`<div class="c-title">📝 Ghi Nhớ</div><div class="c-text"><p>• <code>range(n)</code> → 0 đến n-1</p><p>• <code>range(a,b)</code> → a đến b-1</p><p>• <code>range(a,b,step)</code> → bước nhảy</p><p>• <code>break</code> — thoát vòng lặp</p><p>• <code>continue</code> — bỏ qua vòng hiện tại</p></div><div class="warn">while thiếu điều kiện dừng → vòng lặp vô hạn!</div>`,
+  qs:[
+    {type:"mc",q:"<code>range(1,6)</code> tạo ra dãy nào?",opts:["1,2,3,4,5,6","0,1,2,3,4,5","1,2,3,4,5","0,1,2,3,4"],ans:2,ex:"range(1,6) → từ 1 đến 5 (không gồm 6)."},
+    {type:"fill",q:"Điền từ khoá thoát vòng lặp:",pre:"for i in range(10):\n    if i == 5:\n        ___",blank:"break",fill:"break",ex:"break dừng vòng lặp ngay lập tức."},
+    {type:"sort",q:"Sắp xếp tính tổng 1→5 = 15:",items:["print(tong)","    tong += i","tong = 0","for i in range(1, 6):"],correct:[2,3,1,0],ex:"Khai báo → for → cộng dồn → in kết quả."},
+    {type:"mc",q:"Từ khoá bỏ qua iteration hiện tại?",opts:["break","skip","pass","continue"],ans:3,ex:"continue bỏ qua iteration hiện tại, tiếp tục lặp."},
+    {type:"mc",q:"<code>range(0,10,2)</code> cho kết quả gì?",opts:["0,2,4,6,8","1,3,5,7,9","0,2,4,6,8,10","2,4,6,8"],ans:0,ex:"Bắt đầu 0, bước nhảy 2, dừng trước 10 → 0,2,4,6,8."},
+  ],projIdx:1},
+
+ {id:2,title:"Hàm",sub:"Functions (def)",icon:"⚙️",color:"#c2410c",
+  theory:`<div class="c-title">⚙️ Hàm · Functions</div><div class="c-text"><p>Hàm là <strong>khối code có tên</strong>, có thể tái sử dụng. Giúp code gọn gàng và không lặp lại (DRY).</p></div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="cm"># Định nghĩa hàm</span>
+<span class="kw">def</span> <span class="fn">chao</span>(<span class="var">ten</span>):
+    <span class="fn">print</span>(<span class="st">f"Xin chào, </span><span class="var">{ten}</span><span class="st">!"</span>)
+
+<span class="fn">chao</span>(<span class="st">"Phượng"</span>)   <span class="cm"># Xin chào, Phượng!</span>
+
+<span class="cm"># Hàm trả về giá trị</span>
+<span class="kw">def</span> <span class="fn">cong</span>(<span class="var">a</span>, <span class="var">b</span>):
+    <span class="kw">return</span> <span class="var">a</span> <span class="op">+</span> <span class="var">b</span>
+
+<span class="var">kq</span> <span class="op">=</span> <span class="fn">cong</span>(<span class="num">3</span>, <span class="num">7</span>)
+<span class="fn">print</span>(<span class="var">kq</span>)        <span class="cm"># 10</span></pre></div><div class="tip">Hàm dùng <strong>def</strong> để định nghĩa, <strong>return</strong> để trả về kết quả.</div>`,
+  example:`<div class="c-title">💡 Tham Số Mặc Định & Lambda</div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="cm"># Tham số mặc định</span>
+<span class="kw">def</span> <span class="fn">luy_thua</span>(<span class="var">base</span>, <span class="var">exp</span><span class="op">=</span><span class="num">2</span>):
+    <span class="kw">return</span> <span class="var">base</span> <span class="op">**</span> <span class="var">exp</span>
+<span class="fn">print</span>(<span class="fn">luy_thua</span>(<span class="num">3</span>))      <span class="cm"># 9</span>
+<span class="fn">print</span>(<span class="fn">luy_thua</span>(<span class="num">2</span>,<span class="num">10</span>))   <span class="cm"># 1024</span>
+
+<span class="cm"># Nhiều return values</span>
+<span class="kw">def</span> <span class="fn">stats</span>(<span class="var">lst</span>):
+    <span class="kw">return</span> <span class="fn">min</span>(<span class="var">lst</span>), <span class="fn">max</span>(<span class="var">lst</span>), <span class="fn">sum</span>(<span class="var">lst</span>)
+<span class="var">lo</span>,<span class="var">hi</span>,<span class="var">total</span> <span class="op">=</span> <span class="fn">stats</span>([<span class="num">3</span>,<span class="num">1</span>,<span class="num">9</span>,<span class="num">2</span>])
+<span class="fn">print</span>(<span class="var">lo</span>,<span class="var">hi</span>,<span class="var">total</span>)      <span class="cm"># 1 9 15</span></pre></div>`,
+  note:`<div class="c-title">📝 Ghi Nhớ</div><div class="c-text"><p>• <code>def tên(params):</code> — định nghĩa hàm</p><p>• <code>return giá_trị</code> — trả về kết quả</p><p>• Tham số mặc định: <code>def f(x, y=0)</code></p><p>• Hàm không có return → trả về <code>None</code></p></div><div class="tip">Nguyên tắc: mỗi hàm chỉ làm <strong>1 việc</strong>. Đặt tên mô tả rõ: <code>tinh_dien_tich()</code>.</div>`,
+  qs:[
+    {type:"mc",q:"Từ khoá định nghĩa hàm trong Python?",opts:["function","define","def","fn"],ans:2,ex:"def là từ khoá tạo hàm trong Python."},
+    {type:"fill",q:"Điền để hàm trả về giá trị:",pre:"def binh_phuong(x):\n    ___ x * x",blank:"return",fill:"return",ex:"return gửi giá trị trở lại nơi gọi hàm."},
+    {type:"sort",q:"Sắp xếp để tạo hàm tính bình phương:",items:["print(binh_phuong(4))","    return x * x","def binh_phuong(x):"],correct:[2,1,0],ex:"def → thân hàm → gọi hàm."},
+    {type:"mc",q:"<code>def f(a, b=5): ...</code> — gọi <code>f(3)</code> thì b=?",opts:["0","3","5","None"],ans:2,ex:"b=5 là giá trị mặc định khi không truyền vào."},
+    {type:"mc",q:"Hàm không có return trả về gì?",opts:["0","False","''","None"],ans:3,ex:"Hàm không có return tự trả về None."},
+  ],projIdx:1},
+
+ {id:3,title:"Điều Kiện",sub:"if / elif / else",icon:"🔀",color:"#0f766e",
+  theory:`<div class="c-title">🔀 Điều Kiện · Conditionals</div><div class="c-text"><p>Câu lệnh điều kiện giúp chương trình <strong>đưa ra quyết định</strong> dựa trên True/False.</p></div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="var">diem</span> <span class="op">=</span> <span class="num">8.5</span>
+<span class="kw">if</span> <span class="var">diem</span> <span class="op">&gt;=</span> <span class="num">9</span>:
+    <span class="fn">print</span>(<span class="st">"Xuất sắc 🌟"</span>)
+<span class="kw">elif</span> <span class="var">diem</span> <span class="op">&gt;=</span> <span class="num">7</span>:
+    <span class="fn">print</span>(<span class="st">"Giỏi 👍"</span>)   <span class="cm"># ← chạy</span>
+<span class="kw">elif</span> <span class="var">diem</span> <span class="op">&gt;=</span> <span class="num">5</span>:
+    <span class="fn">print</span>(<span class="st">"Trung bình"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="st">"Cần cố gắng"</span>)</pre></div><div class="tip">Python dùng <strong>indentation 4 dấu cách</strong> thay vì { } như các ngôn ngữ khác!</div>`,
+  example:`<div class="c-title">💡 Toán Tử Logic & Ternary</div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="var">x</span> <span class="op">=</span> <span class="num">15</span>
+<span class="cm"># and / or / not</span>
+<span class="kw">if</span> <span class="var">x</span> <span class="op">&gt;</span> <span class="num">10</span> <span class="kw">and</span> <span class="var">x</span> <span class="op">&lt;</span> <span class="num">20</span>:
+    <span class="fn">print</span>(<span class="st">"Trong khoảng 10-20"</span>)
+
+<span class="cm"># Ternary — 1 dòng</span>
+<span class="var">loai</span> <span class="op">=</span> <span class="st">"chẵn"</span> <span class="kw">if</span> <span class="var">x</span> <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span> <span class="kw">else</span> <span class="st">"lẻ"</span>
+<span class="fn">print</span>(<span class="var">loai</span>)     <span class="cm"># lẻ</span>
+
+<span class="cm"># Kiểm tra trong list</span>
+<span class="kw">if</span> <span class="st">"đỏ"</span> <span class="kw">in</span> [<span class="st">"đỏ"</span>,<span class="st">"xanh"</span>,<span class="st">"vàng"</span>]:
+    <span class="fn">print</span>(<span class="st">"Màu cơ bản!"</span>)</pre></div>`,
+  note:`<div class="c-title">📝 Ghi Nhớ</div><div class="c-text"><p>• <code>if</code> → <code>elif</code> → <code>else</code></p><p>• <code>==</code> so sánh, <code>=</code> là gán!</p><p>• <code>and</code>, <code>or</code>, <code>not</code></p><p>• <code>in</code> — kiểm tra phần tử trong list</p><p>• Ternary: <code>x if cond else y</code></p></div>`,
+  qs:[
+    {type:"mc",q:"Từ khoá điều kiện phụ (không phải if đầu, không phải else)?",opts:["else if","elif","then","elseif"],ans:1,ex:"Python dùng elif thay vì else if."},
+    {type:"fill",q:"Điền toán tử so sánh bằng nhau:",pre:'if ten ___ "Python":\n    print("Đúng!")',blank:"==",fill:"==",ex:"== so sánh bằng. = là gán giá trị."},
+    {type:"sort",q:"Sắp xếp kiểm tra điểm đúng thứ tự:",items:["    print('Yếu')","if diem >= 7:","    print('TB')","    print('Giỏi')","elif diem >= 5:","else:"],correct:[1,3,4,2,5,0],ex:"if → elif → else, từ điều kiện cao đến thấp."},
+    {type:"mc",q:"<code>'a' in ['a','b','c']</code> trả về gì?",opts:["1","'a'","True","False"],ans:2,ex:"in trả về True nếu phần tử tồn tại trong list."},
+    {type:"mc",q:"<code>not False</code> bằng gì?",opts:["False","True","None","0"],ans:1,ex:"not đảo ngược giá trị boolean."},
+  ],projIdx:1},
+
+ {id:4,title:"List & Dict",sub:"Collections",icon:"📋",color:"#6d28d9",
+  theory:`<div class="c-title">📋 List & Dictionary</div><div class="c-text"><p><strong>List</strong> — danh sách có thứ tự, chỉnh sửa được. <strong>Dict</strong> — ánh xạ key→value.</p></div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="cm"># LIST</span>
+<span class="var">fruits</span> <span class="op">=</span> [<span class="st">"táo"</span>, <span class="st">"cam"</span>, <span class="st">"xoài"</span>]
+<span class="fn">print</span>(<span class="var">fruits</span>[<span class="num">0</span>])      <span class="cm"># táo (index 0)</span>
+<span class="var">fruits</span>.<span class="fn">append</span>(<span class="st">"nho"</span>)  <span class="cm"># thêm phần tử</span>
+<span class="var">fruits</span>.<span class="fn">remove</span>(<span class="st">"cam"</span>) <span class="cm"># xoá phần tử</span>
+<span class="fn">print</span>(<span class="fn">len</span>(<span class="var">fruits</span>))    <span class="cm"># 3</span>
+
+<span class="cm"># DICT</span>
+<span class="var">sv</span> <span class="op">=</span> {<span class="st">"ten"</span>:<span class="st">"Phượng"</span>, <span class="st">"diem"</span>:<span class="num">9.5</span>}
+<span class="fn">print</span>(<span class="var">sv</span>[<span class="st">"ten"</span>])      <span class="cm"># Phượng</span>
+<span class="var">sv</span>[<span class="st">"lop"</span>] <span class="op">=</span> <span class="st">"12A"</span>     <span class="cm"># thêm key mới</span></pre></div><div class="tip">List dùng [ ], Dict dùng { }. Truy cập List bằng index số, Dict bằng key tên.</div>`,
+  example:`<div class="c-title">💡 List Comprehension & Dict Methods</div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="cm"># List comprehension</span>
+<span class="var">binh_phuong</span> <span class="op">=</span> [<span class="var">x</span><span class="op">**</span><span class="num">2</span> <span class="kw">for</span> <span class="var">x</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>)]
+<span class="fn">print</span>(<span class="var">binh_phuong</span>)   <span class="cm"># [0,1,4,9,16]</span>
+
+<span class="cm"># Dict methods</span>
+<span class="var">d</span> <span class="op">=</span> {<span class="st">"a"</span>:<span class="num">1</span>, <span class="st">"b"</span>:<span class="num">2</span>, <span class="st">"c"</span>:<span class="num">3</span>}
+<span class="fn">print</span>(<span class="var">d</span>.<span class="fn">keys</span>())       <span class="cm"># dict_keys(['a','b','c'])</span>
+<span class="fn">print</span>(<span class="var">d</span>.<span class="fn">values</span>())     <span class="cm"># dict_values([1,2,3])</span>
+<span class="kw">for</span> <span class="var">k</span>,<span class="var">v</span> <span class="kw">in</span> <span class="var">d</span>.<span class="fn">items</span>():
+    <span class="fn">print</span>(<span class="st">f"</span><span class="var">{k}</span><span class="st">:</span><span class="var">{v}</span><span class="st">"</span>)</pre></div>`,
+  note:`<div class="c-title">📝 Ghi Nhớ</div><div class="c-text"><p><strong>List methods:</strong></p><p>• <code>.append(x)</code> thêm cuối · <code>.insert(i,x)</code> thêm tại vị trí</p><p>• <code>.remove(x)</code> xoá · <code>.pop()</code> lấy và xoá cuối</p><p>• <code>.sort()</code> sắp xếp · <code>len(lst)</code> độ dài</p><p><strong>Dict methods:</strong></p><p>• <code>.get(key, default)</code> · <code>.keys()</code> · <code>.values()</code> · <code>.items()</code></p></div>`,
+  qs:[
+    {type:"mc",q:"<code>['a','b','c'][1]</code> trả về gì?",opts:["'a'","'b'","'c'","IndexError"],ans:1,ex:"Index bắt đầu từ 0, nên [1] là phần tử thứ 2 = 'b'."},
+    {type:"fill",q:"Điền method thêm phần tử vào cuối list:",pre:'fruits = ["táo"]\nfruits.___("cam")',blank:"append",fill:"append",ex:".append() thêm phần tử vào cuối list."},
+    {type:"sort",q:"Sắp xếp tạo dict sinh viên và in tên:",items:['print(sv["ten"])','sv = {"ten": "An", "diem": 9}',"# tạo dict"],correct:[2,1,0],ex:"Tạo dict → dùng key để truy cập."},
+    {type:"mc",q:"Cú pháp list comprehension tạo list bình phương 0→4?",opts:["[x**2 for x in range(5)]","[x**2 while x<5]","list(x**2, range(5))","[for x in range(5): x**2]"],ans:0,ex:"List comprehension: [biểu_thức for biến in iterable]."},
+    {type:"mc",q:"<code>{'a':1,'b':2}.get('c', 0)</code> trả về gì?",opts:["None","KeyError","0","''"],ans:2,ex:".get(key, default) trả về default nếu key không tồn tại."},
+  ],projIdx:2},
+
+ {id:5,title:"OOP Cơ Bản",sub:"Classes & Objects",icon:"🏛️",color:"#be185d",
+  theory:`<div class="c-title">🏛️ Lập Trình Hướng Đối Tượng · OOP</div><div class="c-text"><p>OOP tổ chức code thành <strong>class</strong> (khuôn mẫu) và <strong>object</strong> (thực thể). Giúp code dễ mở rộng và tái sử dụng.</p></div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="kw">class</span> <span class="fn">SinhVien</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="var">self</span>, <span class="var">ten</span>, <span class="var">diem</span>):
+        <span class="var">self</span>.<span class="var">ten</span>  <span class="op">=</span> <span class="var">ten</span>
+        <span class="var">self</span>.<span class="var">diem</span> <span class="op">=</span> <span class="var">diem</span>
+
+    <span class="kw">def</span> <span class="fn">xep_loai</span>(<span class="var">self</span>):
+        <span class="kw">if</span> <span class="var">self</span>.<span class="var">diem</span> <span class="op">&gt;=</span> <span class="num">8</span>:
+            <span class="kw">return</span> <span class="st">"Giỏi"</span>
+        <span class="kw">return</span> <span class="st">"Trung bình"</span>
+
+<span class="cm"># Tạo object</span>
+<span class="var">sv1</span> <span class="op">=</span> <span class="fn">SinhVien</span>(<span class="st">"An"</span>, <span class="num">9.0</span>)
+<span class="fn">print</span>(<span class="var">sv1</span>.<span class="fn">xep_loai</span>())  <span class="cm"># Giỏi</span></pre></div><div class="tip"><code>__init__</code> là constructor — tự động chạy khi tạo object. <code>self</code> là tham chiếu đến object hiện tại.</div>`,
+  example:`<div class="c-title">💡 Kế Thừa · Inheritance</div><div class="cb"><div class="cb-dots"><span></span><span></span><span></span></div><div class="cb-lang">Python</div><pre><span class="kw">class</span> <span class="fn">DongVat</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="var">self</span>, <span class="var">ten</span>):
+        <span class="var">self</span>.<span class="var">ten</span> <span class="op">=</span> <span class="var">ten</span>
+    <span class="kw">def</span> <span class="fn">keu</span>(<span class="var">self</span>):
+        <span class="kw">return</span> <span class="st">"..."</span>
+
+<span class="kw">class</span> <span class="fn">Cho</span>(<span class="fn">DongVat</span>):   <span class="cm"># kế thừa</span>
+    <span class="kw">def</span> <span class="fn">keu</span>(<span class="var">self</span>):      <span class="cm"># override</span>
+        <span class="kw">return</span> <span class="st">"Gâu gâu!"</span>
+
+<span class="var">c</span> <span class="op">=</span> <span class="fn">Cho</span>(<span class="st">"Rex"</span>)
+<span class="fn">print</span>(<span class="var">c</span>.<span class="var">ten</span>)    <span class="cm"># Rex</span>
+<span class="fn">print</span>(<span class="var">c</span>.<span class="fn">keu</span>())  <span class="cm"># Gâu gâu!</span></pre></div>`,
+  note:`<div class="c-title">📝 Ghi Nhớ</div><div class="c-text"><p>• <code>class Tên:</code> — định nghĩa class</p><p>• <code>__init__(self, ...)</code> — constructor</p><p>• <code>self.thuoc_tinh</code> — attribute</p><p>• <code>def phuong_thuc(self)</code> — method</p><p>• <code>class Con(Cha)</code> — kế thừa</p></div><div class="warn">Luôn có <code>self</code> làm tham số đầu tiên của mọi method trong class!</div>`,
+  qs:[
+    {type:"mc",q:"Method nào tự động chạy khi tạo object?",opts:["__start__","__init__","__new__","__create__"],ans:1,ex:"__init__ là constructor, chạy tự động khi gọi ClassName()."},
+    {type:"fill",q:"Điền để truy cập attribute ten của object sv:",pre:"sv = SinhVien('An', 9)\nprint(sv.___)",blank:"ten",fill:"ten",ex:"Truy cập attribute: object.attribute_name."},
+    {type:"sort",q:"Sắp xếp đúng để tạo class đơn giản:",items:["d = Dog('Rex')","    def __init__(self, name):","class Dog:","        self.name = name"],correct:[2,1,3,0],ex:"class → __init__ → self.attr = → tạo object."},
+    {type:"mc",q:"Kế thừa trong Python được viết như nào?",opts:["class Con extends Cha","class Con inherits Cha","class Con(Cha):","class Cha:Con"],ans:2,ex:"Cú pháp kế thừa: class Con(Cha):"},
+    {type:"mc",q:"<code>isinstance(sv, SinhVien)</code> trả về gì nếu sv là object SinhVien?",opts:["'SinhVien'","1","True","False"],ans:2,ex:"isinstance() trả về True nếu object là instance của class đó."},
+  ],projIdx:2},
+];
+
+const PROJECTS = [
+  {
+    id:0, title:"Máy Tính Đơn Giản", icon:"🔢", filename:"calculator.py",
+    desc:"Xây dựng máy tính thực hiện 4 phép tính cơ bản: cộng, trừ, nhân, chia. Áp dụng kiến thức về biến, hàm và điều kiện.",
+    req:"Yêu cầu: Nhập 2 số và phép tính → In kết quả. Xử lý lỗi chia cho 0.",
+    unlockAfter:0,
+    steps:[
+      {n:"Bước 1",t:"Tạo các hàm tính",s:"cong(), tru(), nhan(), chia()"},
+      {n:"Bước 2",t:"Nhận input từ người dùng",s:"Dùng float(input(...))"},
+      {n:"Bước 3",t:"Chọn phép tính",s:"Dùng if/elif/else"},
+      {n:"Bước 4",t:"Xử lý chia cho 0",s:"Kiểm tra mẫu số != 0"},
+    ],
+    starterCode:`# 🔢 Mini Project: Máy Tính Đơn Giản
+# Hoàn thành các hàm và logic bên dưới!
+
+def cong(a, b):
+    return a + b
+
+def tru(a, b):
+    # TODO: viết hàm trừ
+    pass
+
+def nhan(a, b):
+    # TODO: viết hàm nhân
+    pass
+
+def chia(a, b):
+    # TODO: viết hàm chia (xử lý chia cho 0!)
+    if b == 0:
+        return "Lỗi: Không thể chia cho 0!"
+    pass
+
+# Test các hàm
+print("=== MÁY TÍNH ĐƠN GIẢN ===")
+print(f"5 + 3 = {cong(5, 3)}")
+print(f"10 - 4 = {tru(10, 4)}")
+print(f"6 x 7 = {nhan(6, 7)}")
+print(f"15 / 3 = {chia(15, 3)}")
+print(f"10 / 0 = {chia(10, 0)}")
+
+# TODO: Thêm input() để nhập số từ người dùng
+# a = float(input("Nhập số thứ nhất: "))
+# ...`,
+  },
+  {
+    id:1, title:"Game Đoán Số", icon:"🎮", filename:"guess_game.py",
+    desc:"Máy chọn số ngẫu nhiên 1-100. Người chơi đoán và nhận gợi ý 'Cao hơn' / 'Thấp hơn'. Đếm số lần đoán.",
+    req:"Yêu cầu: import random, vòng lặp while, đếm lần đoán, thông báo thắng khi đúng.",
+    unlockAfter:1,
+    steps:[
+      {n:"Bước 1",t:"Import random & tạo số bí mật",s:"import random; secret = random.randint(1,100)"},
+      {n:"Bước 2",t:"Vòng lặp đoán",s:"while True: guess = int(input(...))"},
+      {n:"Bước 3",t:"So sánh & gợi ý",s:"if/elif/else để báo Cao/Thấp/Đúng"},
+      {n:"Bước 4",t:"Đếm số lần đoán",s:"Tạo biến count, tăng mỗi lần đoán"},
+    ],
+    starterCode:`# 🎮 Mini Project: Game Đoán Số
+import random
+
+def choi_game():
+    # Tạo số bí mật 1-100
+    bi_mat = random.randint(1, 100)
+    so_lan = 0
+    
+    print("=== GAME ĐOÁN SỐ ===")
+    print("Tôi đang nghĩ một số từ 1 đến 100...")
+    
+    while True:
+        try:
+            # TODO: Nhận input từ người dùng
+            du_doan = int(input(f"Lần {so_lan+1} - Đoán số: "))
+            so_lan += 1
+            
+            # TODO: So sánh và đưa ra gợi ý
+            if du_doan < bi_mat:
+                print("📈 Cao hơn!")
+            elif du_doan > bi_mat:
+                print("📉 Thấp hơn!")
+            else:
+                print(f"🎉 Chính xác! Số {bi_mat} sau {so_lan} lần đoán!")
+                break
+                
+        except ValueError:
+            print("⚠️ Vui lòng nhập số nguyên!")
+
+# Demo không dùng input (để test)
+print("=== DEMO (không dùng input) ===")
+bi_mat_demo = 42
+danh_sach_doan = [50, 25, 37, 43, 40, 42]
+
+so_lan = 0
+for du_doan in danh_sach_doan:
+    so_lan += 1
+    if du_doan < bi_mat_demo:
+        print(f"Đoán {du_doan}: 📈 Cao hơn!")
+    elif du_doan > bi_mat_demo:
+        print(f"Đoán {du_doan}: 📉 Thấp hơn!")
+    else:
+        print(f"Đoán {du_doan}: 🎉 Đúng sau {so_lan} lần!")
+        break`,
+  },
+  {
+    id:2, title:"To-Do List", icon:"📋", filename:"todo.py",
+    desc:"Xây dựng ứng dụng quản lý danh sách công việc dùng List và Dict. Thêm, xoá, đánh dấu hoàn thành.",
+    req:"Yêu cầu: Dùng list chứa dict, các hàm thêm/xoá/hiển thị, class TodoList (nếu học OOP).",
+    unlockAfter:3,
+    steps:[
+      {n:"Bước 1",t:"Tạo class TodoList",s:"__init__ với self.tasks = []"},
+      {n:"Bước 2",t:"Method add_task()",s:"Thêm dict {'title':..., 'done':False}"},
+      {n:"Bước 3",t:"Method complete_task()",s:"Đánh dấu done=True theo index"},
+      {n:"Bước 4",t:"Method show_tasks()",s:"In danh sách với ✅/⬜"},
+    ],
+    starterCode:`# 📋 Mini Project: To-Do List
+# Dùng class để quản lý danh sách công việc!
+
+class TodoList:
+    def __init__(self):
+        self.tasks = []  # Danh sách công việc
+    
+    def them_viec(self, tieu_de):
+        """Thêm công việc mới"""
+        viec = {"tieu_de": tieu_de, "hoan_thanh": False}
+        self.tasks.append(viec)
+        print(f"✅ Đã thêm: '{tieu_de}'")
+    
+    def hoan_thanh(self, index):
+        """Đánh dấu hoàn thành theo số thứ tự"""
+        if 0 <= index < len(self.tasks):
+            self.tasks[index]["hoan_thanh"] = True
+            print(f"🎉 Đã hoàn thành: '{self.tasks[index]['tieu_de']}'")
+        else:
+            print("⚠️ Số thứ tự không hợp lệ!")
+    
+    def xoa_viec(self, index):
+        """Xoá công việc theo số thứ tự"""
+        # TODO: Viết hàm xoá công việc
+        pass
+    
+    def hien_thi(self):
+        """Hiển thị toàn bộ danh sách"""
+        print("\\n=== DANH SÁCH CÔNG VIỆC ===")
+        if not self.tasks:
+            print("(Chưa có công việc nào)")
+            return
+        for i, viec in enumerate(self.tasks):
+            trang_thai = "✅" if viec["hoan_thanh"] else "⬜"
+            print(f"{i+1}. {trang_thai} {viec['tieu_de']}")
+        
+        done = sum(1 for v in self.tasks if v["hoan_thanh"])
+        print(f"\\nHoàn thành: {done}/{len(self.tasks)}")
+
+# === SỬ DỤNG ===
+todo = TodoList()
+todo.them_viec("Học Python - Biến & Kiểu DL")
+todo.them_viec("Học Python - Vòng lặp")
+todo.them_viec("Học Python - Hàm")
+todo.them_viec("Làm Mini Project")
+todo.them_viec("Ôn tập và luyện tập")
+
+todo.hien_thi()
+
+todo.hoan_thanh(0)
+todo.hoan_thanh(1)
+todo.hoan_thanh(2)
+
+todo.hien_thi()`,
+  },
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let S = {xp:0,streak:1,prog:[0,0,0,0,0,0],done:[false,false,false,false,false,false],
+         projDone:[false,false,false],totalR:0,totalA:0,codeRuns:0};
+let curLesson=0,curQ=0,answered=false,score=0,sortOrder=[];
+let curProject=0;
+let pyodide=null,pyReady=false;
+const TASKS = [
+  {t:"In 'Xin chào Python!'",done:false},
+  {t:"Tạo biến name và in ra",done:false},
+  {t:"Dùng for loop in 1→10",done:false},
+  {t:"Viết hàm tính bình phương",done:false},
+  {t:"Tạo list 5 phần tử, in từng phần tử",done:false},
+];
+
+// ═══════════════════════════════════════════════════════
+// PYODIDE
+// ═══════════════════════════════════════════════════════
+async function initPyodide(){
+  const st=document.getElementById('py-status');
+  st.classList.add('show');
+  document.getElementById('py-status-txt').textContent='Đang tải Python engine...';
+  try{
+    pyodide=await loadPyodide({stdout:(t)=>appendOutput(t,'out-line'),stderr:(t)=>appendOutput(t,'out-err')});
+    pyReady=true;
+    st.classList.remove('show');
+    showToast('🐍','Python sẵn sàng! Code editor hoạt động!');
+  }catch(e){
+    document.getElementById('py-status-txt').textContent='Lỗi tải Python. Cần kết nối internet.';
+    setTimeout(()=>st.classList.remove('show'),4000);
+  }
+}
+initPyodide();
+
+async function runCode(){
+  if(!pyReady){showToast('⏳','Đang tải Python, chờ chút...');return;}
+  const code=document.getElementById('code-editor').value;
+  const btn=document.getElementById('btn-run');
+  btn.disabled=true;btn.textContent='⏳ Đang chạy...';
+  document.getElementById('output-area').innerHTML='';
+  S.codeRuns++;updateUI();
+  try{
+    await pyodide.runPythonAsync(code);
+    appendOutput('\n✓ Chạy thành công!','out-ok');
+  }catch(e){
+    appendOutput(e.message,'out-err');
+  }
+  btn.disabled=false;btn.innerHTML='<span>▶</span> Chạy';
+}
+
+async function runProjectCode(){
+  if(!pyReady){showToast('⏳','Đang tải Python...');return;}
+  const code=document.getElementById('proj-editor').value;
+  const btn=document.getElementById('btn-run-proj');
+  btn.disabled=true;btn.textContent='⏳';
+  document.getElementById('proj-output').innerHTML='';
+  S.codeRuns++;updateUI();
+  try{
+    await pyodide.runPythonAsync(code);
+    appendOutput('\n✓ Chạy thành công!','out-ok',true);
+    S.projDone[curProject]=true;
+    updateUI();showToast('🚀',`Project "${PROJECTS[curProject].title}" hoàn thành! +30 XP`);
+    S.xp+=30;updateUI();
+  }catch(e){
+    appendOutput(e.message,'out-err',true);
+  }
+  btn.disabled=false;btn.innerHTML='<span>▶</span> Chạy';
+}
+
+function appendOutput(text,cls,isProj=false){
+  const el=document.getElementById(isProj?'proj-output':'output-area');
+  if(!el)return;
+  const d=document.createElement('div');
+  d.className=cls;d.textContent=text;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+function clearEditor(){document.getElementById('code-editor').value='';document.getElementById('output-area').innerHTML='';}
+function clearOutput(){document.getElementById('output-area').innerHTML='';}
+function clearProjOutput(){document.getElementById('proj-output').innerHTML='';}
+function loadSample(){
+  document.getElementById('code-editor').value=`# 🐍 Ví dụ: Kết hợp tất cả kiến thức
+class HocSinh:
+    def __init__(self, ten, diem):
+        self.ten = ten
+        self.diem = diem
+    
+    def xep_loai(self):
+        if self.diem >= 9: return "Xuất sắc 🌟"
+        elif self.diem >= 7: return "Giỏi 👍"
+        elif self.diem >= 5: return "Trung bình"
+        else: return "Yếu"
+
+# Tạo danh sách học sinh
+hoc_sinh = [
+    HocSinh("An", 9.5),
+    HocSinh("Bình", 7.2),
+    HocSinh("Chi", 5.8),
+    HocSinh("Dũng", 4.5),
+]
+
+print("=== KẾT QUẢ HỌC TẬP ===")
+for hs in hoc_sinh:
+    print(f"{hs.ten}: {hs.diem} điểm → {hs.xep_loai()}")
+
+gioi = [hs for hs in hoc_sinh if hs.diem >= 7]
+print(f"\\nSố học sinh giỏi: {len(gioi)}/{len(hoc_sinh)}")`;
+}
+
+// ═══════════════════════════════════════════════════════
+// NAV & PAGES
+// ═══════════════════════════════════════════════════════
+function gotoPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const navMap={home:"[onclick=\"gotoPage('home')\"]",editor:"[onclick=\"gotoPage('editor')\"]",dashboard:"[onclick=\"gotoPage('dashboard')\"]"};
+  if(navMap[name]) document.querySelector(navMap[name])?.classList.add('active');
+  if(name==='dashboard') renderDashboard();
+  if(name==='editor') renderTasks();
+}
+
+function openLesson(idx){
+  if(idx>0&&!S.done[idx-1]){showToast('🔒','Hoàn thành bài trước để mở khoá!');return;}
+  curLesson=idx;
+  const L=LESSONS[idx];
+  document.getElementById('ls-title').textContent=L.title;
+  document.getElementById('ls-sub').textContent=L.sub;
+  document.getElementById('tb-theory').innerHTML=L.theory;
+  document.getElementById('tb-example').innerHTML=L.example;
+  document.getElementById('tb-note').innerHTML=L.note;
+  // reset tabs
+  document.querySelectorAll('.t-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.querySelectorAll('.t-body').forEach((b,i)=>b.classList.toggle('active',i===0));
+  startQuiz();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-lesson').classList.add('active');
+  document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-'+idx)?.classList.add('active');
+}
+
+function swTab(name,btn){
+  document.querySelectorAll('.t-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.t-body').forEach(b=>b.classList.remove('active'));
+  const map={theory:0,example:1,note:2};
+  document.getElementById('tb-'+name).classList.add('active');
+  document.querySelectorAll('.t-tab')[map[name]]?.classList.add('active');
+}
+
+function openProject(idx){
+  const proj=PROJECTS[idx];
+  if(!S.done[proj.unlockAfter]){showToast('🔒',`Hoàn thành bài "${LESSONS[proj.unlockAfter].title}" trước!`);return;}
+  curProject=idx;
+  document.getElementById('proj-title-h').textContent=proj.title;
+  document.getElementById('proj-filename').textContent=proj.filename;
+  document.getElementById('proj-meta').innerHTML=`
+    <div class="proj-title-row"><div class="proj-icon">${proj.icon}</div><div class="proj-name">${proj.title}</div></div>
+    <div class="proj-desc">${proj.desc}</div>
+    <div class="proj-steps">${proj.steps.map(s=>`<div class="proj-step"><div class="step-n">${s.n}</div><div class="step-t">${s.t}</div><div class="step-s">${s.s}</div></div>`).join('')}</div>
+    <div class="proj-req"><strong>📌 </strong>${proj.req}</div>`;
+  document.getElementById('proj-steps-panel').innerHTML=`
+    <div class="editor-tasks">
+      <div class="task-title">🎯 Mục Tiêu Project</div>
+      ${proj.steps.map((s,i)=>`<div class="task-item" id="ps-${i}"><span class="task-num">${i+1}</span><span class="task-text">${s.t} — <em>${s.s}</em></span><span class="task-check" onclick="toggleProjTask(${i})"></span></div>`).join('')}
+    </div>`;
+  loadProjectCode();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-project').classList.add('active');
+  document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-p'+idx)?.classList.add('active');
+}
+
+function loadProjectCode(){document.getElementById('proj-editor').value=PROJECTS[curProject].starterCode;}
+function toggleProjTask(i){document.getElementById('ps-'+i)?.classList.toggle('done');}
+function goToProject(){openProject(LESSONS[curLesson].projIdx);}
+
+// ═══════════════════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════════════════
+function startQuiz(){
+  curQ=0;score=0;answered=false;
+  document.getElementById('quiz-main').style.display='';
+  document.getElementById('quiz-result').classList.remove('show');
+  renderQ();
+}
+
+function renderQ(){
+  const Q=LESSONS[curLesson].qs[curQ];
+  answered=false;
+  document.getElementById('qnum').textContent=`Câu ${curQ+1}/${LESSONS[curLesson].qs.length}`;
+  document.getElementById('qtext').innerHTML=Q.q;
+  document.getElementById('qfb').className='fb';document.getElementById('qfb').innerHTML='';
+  document.getElementById('btn-check').style.display='';document.getElementById('btn-check').disabled=false;
+  document.getElementById('btn-nxt').style.display='none';
+  const badges={mc:'qt-mc Trắc nghiệm',fill:'qt-fill Điền chỗ trống',sort:'qt-sort Sắp xếp'};
+  const [cls,lbl]=badges[Q.type].split(' ',2);
+  const b=document.getElementById('qbadge');
+  b.className='qtype '+badges[Q.type].split(' ')[0];
+  b.textContent=badges[Q.type].substring(badges[Q.type].indexOf(' ')+1);
+  const area=document.getElementById('qarea');
+  if(Q.type==='mc') renderMC(Q,area);
+  else if(Q.type==='fill') renderFill(Q,area);
+  else renderSort(Q,area);
+  window._mcSel=-1;
+}
+
+function renderMC(Q,area){
+  area.innerHTML=`<div class="mc-list">${Q.opts.map((o,i)=>`<button class="mc-opt" onclick="selMC(this,${i})"><span class="mc-ltr">${'ABCD'[i]}</span>${o}</button>`).join('')}</div>`;
+}
+function selMC(el,i){if(answered)return;document.querySelectorAll('.mc-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');window._mcSel=i;}
+
+function renderFill(Q,area){
+  area.innerHTML=`<div style="display:flex;flex-direction:column;gap:.5rem;"><div class="fill-pre">${Q.pre}</div><input class="fill-inp" id="fi" placeholder="Nhập đáp án..." autocomplete="off"></div>`;
+  document.getElementById('fi')?.addEventListener('keydown',e=>{if(e.key==='Enter')checkAns();});
+}
+
+function renderSort(Q,area){
+  sortOrder=[...Array(Q.items.length).keys()];
+  for(let i=sortOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sortOrder[i],sortOrder[j]]=[sortOrder[j],sortOrder[i]];}
+  renderSortDOM(Q,area);
+}
+function renderSortDOM(Q,area){
+  area.innerHTML=`<div class="sort-list">${sortOrder.map((it,pos)=>`<div class="sort-it" draggable="true" data-pos="${pos}" ondragstart="ds(event,${pos})" ondragover="dov(event,${pos})" ondrop="dd(event,${pos})" ondragleave="dl(event)"><span class="drag-h">⠿</span><code>${Q.items[it]}</code></div>`).join('')}</div>`;
+}
+let _df=-1;
+function ds(e,p){_df=p;setTimeout(()=>document.querySelectorAll('.sort-it')[p]?.classList.add('dragging'),0);}
+function dov(e,p){e.preventDefault();document.querySelectorAll('.sort-it').forEach((el,i)=>el.classList.toggle('over',i===p));}
+function dl(e){e.currentTarget.classList.remove('over');}
+function dd(e,p){e.preventDefault();document.querySelectorAll('.sort-it').forEach(el=>{el.classList.remove('over','dragging');});if(_df===p)return;[sortOrder[_df],sortOrder[p]]=[sortOrder[p],sortOrder[_df]];renderSortDOM(LESSONS[curLesson].qs[curQ],document.getElementById('qarea'));}
+
+function checkAns(){
+  if(answered)return;
+  answered=true;
+  const Q=LESSONS[curLesson].qs[curQ];
+  let ok=false;
+  if(Q.type==='mc'){
+    const s=window._mcSel;
+    if(s===-1){answered=false;showToast('⚠️','Hãy chọn đáp án!');return;}
+    ok=s===Q.ans;
+    document.querySelectorAll('.mc-opt').forEach((o,i)=>{
+      if(i===Q.ans)o.classList.add('ok');
+      else if(i===s&&!ok)o.classList.add('bad');
+    });
+    window._mcSel=-1;
+  }else if(Q.type==='fill'){
+    const inp=document.getElementById('fi');
+    if(!inp){answered=false;return;}
+    const v=inp.value.trim().toLowerCase();
+    ok=v===Q.fill.toLowerCase()||v.includes(Q.fill.toLowerCase());
+    inp.classList.add(ok?'ok':'bad');inp.disabled=true;
+  }else{
+    ok=sortOrder.every((it,pos)=>it===Q.correct[pos]);
+    document.querySelectorAll('.sort-it').forEach((el,pos)=>el.classList.add(sortOrder[pos]===Q.correct[pos]?'ok':'bad'));
+  }
+  if(ok){score++;S.totalR++;}S.totalA++;
+  const fb=document.getElementById('qfb');
+  fb.className='fb '+(ok?'ok':'bad');
+  fb.innerHTML=(ok?'✅ Chính xác! ':'❌ Chưa đúng! ')+'<em>'+Q.ex+'</em>';
+  document.getElementById('btn-check').style.display='none';
+  const nxt=document.getElementById('btn-nxt');nxt.style.display='';
+  nxt.textContent=curQ<LESSONS[curLesson].qs.length-1?'Câu Tiếp →':'Xem Kết Quả 🎯';
+}
+
+function nextQ(){
+  if(curQ<LESSONS[curLesson].qs.length-1){curQ++;renderQ();}
+  else showResult();
+}
+
+function showResult(){
+  document.getElementById('quiz-main').style.display='none';
+  const res=document.getElementById('quiz-result');res.classList.add('show');
+  const total=LESSONS[curLesson].qs.length;
+  const pct=Math.round(score/total*100);
+  const xp=score*10+(score===total?25:0);
+  S.xp+=xp;S.prog[curLesson]=Math.max(S.prog[curLesson],pct);
+  if(pct>=60)S.done[curLesson]=true;
+  updateUI();updateNavChips();
+  document.getElementById('res-e').textContent=pct>=80?'🎉':pct>=60?'👍':'💪';
+  document.getElementById('res-s').textContent=`${score}/${total}`;
+  document.getElementById('res-sub').textContent=pct>=80?'Xuất sắc! Excellent! 🌟':pct>=60?'Tốt lắm! Good job!':'Thử lại để nắm vững hơn!';
+  document.getElementById('res-xp').textContent=`+${xp} XP`;
+  const projBtn=document.getElementById('btn-go-proj');
+  if(S.done[curLesson]){projBtn.style.display='';projBtn.textContent=`🚀 ${PROJECTS[LESSONS[curLesson].projIdx].title}!`;}
+  if(pct>=60)showToast('🎉',`+${xp} XP! Bài "${LESSONS[curLesson].title}" xong!`);
+}
+
+function retryQuiz(){startQuiz();}
+
+// ═══════════════════════════════════════════════════════
+// RENDER HOME
+// ═══════════════════════════════════════════════════════
+function renderHome(){
+  const colors=['#7c3aed','#0891b2','#c2410c','#0f766e','#6d28d9','#be185d'];
+  document.getElementById('modules-grid').innerHTML=LESSONS.map((L,i)=>{
+    const locked=i>0&&!S.done[i-1];
+    return `<div class="mod-card${locked?' locked':''}" onclick="openLesson(${i})" data-i="${i}">
+      <div class="mod-accent" style="background:${L.color}"></div>
+      <div class="mod-icon">${L.icon}</div>
+      <div class="mod-title">${L.title}</div>
+      <div class="mod-sub">${L.sub}</div>
+      <div class="mod-footer">
+        <div class="mod-bar"><div class="mod-fill" style="width:${S.prog[i]}%;background:${L.color}"></div></div>
+        <div class="mod-pct">${S.prog[i]}%</div>
+        ${S.done[i]?'<span style="font-size:.7rem;color:#4ade80;margin-left:.3rem;">✓</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('projects-grid').innerHTML=PROJECTS.map((P,i)=>{
+    const locked=!S.done[P.unlockAfter];
+    return `<div class="mod-card${locked?' locked':''}" onclick="openProject(${i})">
+      <div class="mod-accent" style="background:${locked?'#374151':'#d97706'}"></div>
+      <div class="mod-icon">${P.icon}</div>
+      <div class="mod-title">${P.title}</div>
+      <div class="mod-sub">Mini Project ${i+1}</div>
+      <div class="mod-footer">
+        <span class="mod-type-badge badge-proj">${locked?'🔒 Locked':'🚀 Project'}</span>
+        ${S.projDone[i]?'<span style="font-size:.7rem;color:#4ade80;margin-left:.3rem;">✓ Done</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTasks(){
+  document.getElementById('task-list').innerHTML=TASKS.map((t,i)=>`
+    <div class="task-item${t.done?' done':''}" id="task-${i}">
+      <span class="task-num">${i+1}</span>
+      <span class="task-text">${t.t}</span>
+      <span class="task-check" onclick="toggleTask(${i})"></span>
+    </div>`).join('');
+}
+function toggleTask(i){TASKS[i].done=!TASKS[i].done;renderTasks();}
+
+// ═══════════════════════════════════════════════════════
+// UI / DASHBOARD
+// ═══════════════════════════════════════════════════════
+function updateUI(){
+  document.getElementById('sb-xp').textContent=S.xp;
+  document.getElementById('sb-streak').textContent=S.streak;
+  document.getElementById('sb-done').textContent=S.done.filter(Boolean).length+'/6';
+  document.getElementById('xp-txt').textContent=S.xp+' / 300 XP';
+  document.getElementById('xp-bar').style.width=Math.min(S.xp/300*100,100)+'%';
+  renderHome();
+}
+
+function updateNavChips(){
+  LESSONS.forEach((_,i)=>{
+    const c=document.getElementById('nc-'+i);if(!c)return;
+    const locked=i>0&&!S.done[i-1];
+    if(S.done[i]){c.textContent='✓';c.className='nav-chip chip-done';}
+    else if(locked){c.textContent='🔒';c.className='nav-chip chip-lock';}
+    else{c.textContent='Mới';c.className='nav-chip chip-new';}
+  });
+  PROJECTS.forEach((P,i)=>{
+    const c=document.getElementById('ncp-'+i);if(!c)return;
+    if(S.projDone[i]){c.textContent='✓';c.className='nav-chip chip-done';}
+    else if(!S.done[P.unlockAfter]){c.textContent='🔒';c.className='nav-chip chip-lock';}
+    else{c.textContent='Open';c.className='nav-chip chip-proj';}
+  });
+}
+
+function renderDashboard(){
+  document.getElementById('d-xp').textContent=S.xp;
+  document.getElementById('d-str').textContent=S.streak;
+  document.getElementById('d-done').textContent=S.done.filter(Boolean).length+'/6';
+  document.getElementById('d-acc').textContent=S.totalA?Math.round(S.totalR/S.totalA*100)+'%':'—';
+  document.getElementById('d-proj').textContent=S.projDone.filter(Boolean).length+'/3';
+  document.getElementById('d-runs').textContent=S.codeRuns;
+  const BDGS=[
+    {e:'🐍',n:'First Snake',c:S.totalA>=1},
+    {e:'⭐',n:'10 XP',c:S.xp>=10},
+    {e:'🔥',n:'On Fire',c:S.streak>=3},
+    {e:'📦',n:'Variables',c:S.done[0]},
+    {e:'🔁',n:'Loop Hero',c:S.done[1]},
+    {e:'⚙️',n:'Function',c:S.done[2]},
+    {e:'🔀',n:'Logic King',c:S.done[3]},
+    {e:'📋',n:'Collector',c:S.done[4]},
+    {e:'🏛️',n:'OOP Master',c:S.done[5]},
+    {e:'🔢',n:'Calculator',c:S.projDone[0]},
+    {e:'🎮',n:'Game Dev',c:S.projDone[1]},
+    {e:'📝',n:'Todo Pro',c:S.projDone[2]},
+    {e:'🏆',n:'PyPath Master',c:S.done.every(Boolean)&&S.projDone.every(Boolean)},
+  ];
+  document.getElementById('badges-row').innerHTML=BDGS.map(b=>`<div class="bdg${b.c?'':' bdg-locked'}"><div class="bdg-e">${b.e}</div><div class="bdg-n">${b.n}</div></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+function showToast(icon,msg){
+  const t=document.getElementById('toast');
+  document.getElementById('t-icon').textContent=icon;
+  document.getElementById('t-msg').textContent=msg;
+  t.classList.add('show');clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+updateUI();updateNavChips();renderTasks();
+</script>
+</body>
+</html>
